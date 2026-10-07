@@ -65,10 +65,24 @@ server <- function(input, output, session) {
 
   output$results <- renderTable({
 
-    earthquake_data()
+    data <- earthquake_data()
 
+    # Convert Unix timestamp to readable UTC date and time
+    data$time <- format(
+      as.POSIXct(
+        data$time,
+        origin = "1970-01-01",
+        tz = "UTC"
+      ),
+      format = "%Y-%m-%d %H:%M:%S"
+    )
+
+    data
   })
 
 }
 
-shinyApp(ui = ui, server = server)
+shinyApp(
+  ui = ui,
+  server = server
+)
