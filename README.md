@@ -1,1 +1,20 @@
-# apihelperR-shiny
+# apihelperR Shiny
+
+A simple Shiny application for exploring earthquake data from the USGS Earthquake API.
+
+The application uses the `apihelperR` package to retrieve earthquake data based on:
+
+- Start date
+- End date
+- Minimum magnitude
+- Maximum number of results
+
+## Installation
+
+Install the required packages:
+
+```r
+install.packages("shiny")
+install.packages("pak")
+
+pak::pak("balascode/apihelperR")
