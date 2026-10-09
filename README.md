@@ -14,8 +14,13 @@ The application uses the `apihelperR` package to retrieve earthquake data based 
 Install the required packages:
 
 ```r
-install.packages("shiny")
-install.packages("pak")
+install.packages(c(
+  "shiny",
+  "leaflet",
+  "sf",
+  "rnaturalearth",
+  "rnaturalearthdata",
+  "pak"
+))
 
 pak::pak("balascode/apihelperR")
-

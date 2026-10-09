@@ -1,5 +1,6 @@
 library(shiny)
 library(apihelperR)
+library(leaflet)
 
 ui <- fluidPage(
 
@@ -43,29 +44,45 @@ ui <- fluidPage(
 
     mainPanel(
 
-      h3("Earthquake data"),
+      # Two tabs: table and map
+      tabsetPanel(
 
-      tableOutput("results")
+        tabPanel(
+          "Earthquake Data",
+
+          h3("Earthquake data"),
+
+          tableOutput("results")
+        ),
+
+        tabPanel(
+          "Earthquake Map",
+
+          h3("Earthquake map"),
+
+          leafletOutput(
+            "earthquake_map",
+            height = 600
+          )
+        )
+
+      )
     )
   )
 )
 
+
 server <- function(input, output, session) {
 
+  # Get earthquake data when search button is pressed
   earthquake_data <- eventReactive(input$search, {
 
-    get_earthquakes(
+    data <- get_earthquakes(
       start_date = as.character(input$start_date),
       end_date = as.character(input$end_date),
       min_magnitude = input$min_magnitude,
       limit = input$limit
     )
-
-  })
-
-  output$results <- renderTable({
-
-    data <- earthquake_data()
 
     # Convert Unix timestamp to readable UTC date and time
     data$time <- format(
@@ -80,7 +97,58 @@ server <- function(input, output, session) {
     data
   })
 
+
+  # -------------------------
+  # Spreadsheet/table
+  # -------------------------
+
+  output$results <- renderTable({
+
+    earthquake_data()
+
+  })
+
+
+  # -------------------------
+  # Earthquake map
+  # -------------------------
+
+  output$earthquake_map <- renderLeaflet({
+
+    data <- earthquake_data()
+
+    leaflet(data) |>
+
+      # Add normal world map
+      addTiles() |>
+
+      # Plot every earthquake coordinate
+      addCircleMarkers(
+        lng = ~longitude,
+        lat = ~latitude,
+
+        # Larger earthquakes get larger points
+        radius = ~pmax(magnitude * 1.5, 3),
+
+        # Information shown when clicking a point
+        popup = ~paste0(
+          "<b>Place:</b> ", place,
+          "<br>",
+          "<b>Magnitude:</b> ", magnitude,
+          "<br>",
+          "<b>Depth:</b> ", depth, " km",
+          "<br>",
+          "<b>Time:</b> ", time,
+          "<br>",
+          "<b>Longitude:</b> ", longitude,
+          "<br>",
+          "<b>Latitude:</b> ", latitude
+        )
+      )
+  })
+
 }
+
 
 shinyApp(
   ui = ui,
