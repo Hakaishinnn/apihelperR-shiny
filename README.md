@@ -9,6 +9,14 @@ The application uses the `apihelperR` package to retrieve earthquake data based 
 - Minimum magnitude
 - Maximum number of results
 
+The application also includes:
+
+- A table of earthquake results
+- An interactive world map
+- Earthquake markers based on longitude and latitude
+- Country filtering for the map
+- Automatic zoom when a country is selected
+
 ## Installation
 
 Install the required packages:
